@@ -1,0 +1,221 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Xml;
+using System.Windows.Forms;
+
+namespace WeatherWardrobe
+{
+
+
+    public partial class Form1 : Form
+    {
+        public Form1()
+        {
+            InitializeComponent();
+        }
+       
+        private void weatherDisplayBtn_Click(object sender, EventArgs e)
+        {
+            
+
+
+            Conditions conditions = new Conditions();
+            decimal zipcode;
+
+            zipcode = decimal.Parse(zipCodeTextBox.Text);
+
+            if (zipcode != 0)
+            {
+
+                conditions = Weather.GetCurrentConditions(zipCodeTextBox.Text);
+            }
+            else
+            {
+                MessageBox.Show("please enter zip");
+            }
+            string tempf = conditions.tempF;
+            
+            string tempfDisplay=tempf + "F";
+
+            /*string feelslikehot = conditions.feelslikehot;
+            decimal feelslikehotD = Convert.ToDecimal(feelslikehot);*/
+
+            string feelslikecold = conditions.feelslikecold;
+            decimal feelslikecoldD = Convert.ToDecimal(feelslikecold);
+
+            string weatherCondit = conditions.weatherCondit;
+
+            /* string high = conditions.high;
+             decimal highD = Convert.ToDecimal(high);
+
+             string low = conditions.low;
+             decimal lowD = Convert.ToDecimal(low);*/
+
+
+            currentTemp.Text = tempfDisplay;
+            conditionLbl.Text = weatherCondit;
+            string[] conditionsSunnyPic = { "Clear", "Partly Cloudy", "Scattered Clouds", "Mostly Cloudy", "Overcast", "Partial Fog", "Shallow Fog", "Patches of Fog",
+                "Blowing Sand", "Blowing Widespread Dust", "Low Drifting Sand", "Low Drifting Widespread Dust", "Sandstorm", "Dust Whirls", "Haze", "Sand",
+                "Widespread Dust", "Volcanic Ash", "Smoke", "Fog Patches", "Fog", "Mist", "Hail", "", "", "", "", "" };
+            if (conditionsSunnyPic.Contains<string>(weatherCondit)) { 
+
+
+            if (feelslikecoldD > 70)
+                {
+                    // sunnyPic.Visible=true;
+                    warmSunnyPerPic.Visible = true;
+                    sunnyPic.Visible = true;
+
+                }
+                else if (feelslikecoldD > 47)
+                {
+                    //sunnyPic.Visible = true;
+                    medTempSunnyPerPic.Visible = true;
+                    sunnyPic.Visible = true;
+
+                }
+                else if (feelslikecoldD < 47)
+                {
+                    // sunnyPic.Visible = true;
+                    sunnyColdPerPic.Visible = true;
+                    sunnyPic.Visible = true;
+                }
+
+            }
+
+            weatherCondit.Replace("Heavy", "").Replace("Light", "").Trim();
+            string[] conditionsRainyPic = { "Squalls", "Small Hail", "Unknown Precipitation", "Funnel Cloud", "Freezing Fog", "Freezing Rain",
+                "Thunderstorms with Small Hail", "Thunderstorms with Hail", "Thunderstorms and Ice Pellets", "Thunderstorms and Rain", "Thunderstorm",
+                "Small Hail Showers", "Hail Showers", "Ice Pellet Showers", "Rain Showers", "Rain Mist", "Spray", "Hail", "Rain", "Drizzle"};
+            if (conditionsRainyPic.Contains<string>(weatherCondit) )
+            {
+                
+
+                if (feelslikecoldD > 70)
+                {
+                    // sunnyPic.Visible=true;
+                    warmSunnyPerPic.Visible = true;
+                    rainyPic.Visible = true;
+
+                }
+                else if (feelslikecoldD > 47)
+                {
+                    //sunnyPic.Visible = true;
+                    medTempSunnyPerPic.Visible = true;
+                    rainyPic.Visible = true;
+
+                }
+                else if (feelslikecoldD < 47)
+                {
+                    // sunnyPic.Visible = true;
+                    sunnyColdPerPic.Visible = true;
+                    rainyPic.Visible = true;
+                }
+
+
+            }
+
+  
+
+        }
+    }
+
+    public class Conditions
+    {
+      
+
+      
+        public string tempF = "No Data";
+        public string tempC = "No Data";
+        //public string feelslikehot = "No Data";
+        public string feelslikecold = "No Data";
+        // public string high = "No Data";
+        //public string low = "No Data";
+        public string weatherCondit = "No Data";
+
+      
+        public string TempF
+        {
+            get { return tempF; }
+            set { tempF = value; }
+        }
+
+        public string TempC
+        {
+            get { return tempC; }
+            set { tempC = value; }
+        }
+
+        public string WeatherCondit
+        {
+            get { return weatherCondit; }
+            set { weatherCondit = value; }
+        }
+
+        /* public string Feelslikehot
+         {
+             get { return feelslikehot; }
+             set { feelslikehot = value; }
+         }*/
+
+        public string Feelslikecold
+        {
+            get { return feelslikecold; }
+            set { feelslikecold = value; }
+        }
+
+
+    /*
+        public string High
+        {
+            get { return high; }
+            set { high = value; }
+        }
+
+        public string Low
+        {
+            get { return low; }
+            set { low = value; }
+        }*/
+    }
+
+    class Weather
+    {
+
+        /// <summary>
+        /// The function that returns the current conditions for the specified location.
+        /// </summary>
+        /// <param name="location">City or ZIP code</param>
+        /// <returns></returns>
+        public static Conditions GetCurrentConditions(string location)
+        {
+            Conditions conditions = new Conditions();
+
+            XmlDocument xmlConditions = new XmlDocument();
+            xmlConditions.Load(string.Format("http://api.wunderground.com/api/341edea446074784/conditions/forecast/q/{0}.xml", location));
+
+
+           
+
+
+                // conditions.City = xmlConditions.SelectSingleNode("/xml_api_reply/weather/forecast_information/city").Attributes["data"].InnerText;
+                // conditions.Weather = xmlConditions.SelectSingleNode("/xml_api_reply/current_observation/weather").Attributes["data"].InnerText;
+                conditions.TempC = xmlConditions.SelectSingleNode("/response/current_observation/temp_c").InnerText;
+            conditions.TempF = xmlConditions.SelectSingleNode("/response/current_observation/temp_f").InnerText;
+            //conditions.Feelslikehot = xmlConditions.SelectSingleNode("/response/current_observation/heat_index").InnerText;
+            conditions.Feelslikecold = xmlConditions.SelectSingleNode("/response/current_observation/feelslike_f").InnerText;
+            conditions.WeatherCondit = xmlConditions.SelectSingleNode("/response/current_observation/weather").InnerText;
+
+
+
+            return conditions;
+        }
+    }
+    
+}
